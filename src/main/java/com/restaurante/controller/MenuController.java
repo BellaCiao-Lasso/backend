@@ -15,9 +15,9 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/menu")
+@RequestMapping("/api/v1/menu")
 @RequiredArgsConstructor
-@Tag(name = "Menú", description = "Consulta del menú disponible para los clientes")
+@Tag(name = "Menú v1", description = "Consulta del menú disponible para los clientes")
 public class MenuController {
 
     private final PlatoService platoService;

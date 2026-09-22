@@ -21,9 +21,9 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/platos")
+@RequestMapping("/api/v1/platos")
 @RequiredArgsConstructor
-@Tag(name = "Platos", description = "Gestión de la carta del restaurante")
+@Tag(name = "Platos v1", description = "Gestión de la carta del restaurante")
 public class PlatoController {
 
     private final PlatoService platoService;

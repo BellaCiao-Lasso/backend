@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -56,11 +57,7 @@ public class PlatoServiceImpl implements PlatoService {
     @Override
     public PlatoResponseDTO obtenerPorId(Long id) {
         log.debug("Buscando plato con id={}", id);
-        Plato plato = platos.get(id);
-        if (plato == null) {
-            log.error("Plato con id={} no encontrado", id);
-            throw new PlatoNotFoundException("Plato no encontrado con id: " + id);
-        }
+        Plato plato = buscarOLanzar(id);
         return mapperOut.toDTO(plato);
     }
 
@@ -68,10 +65,7 @@ public class PlatoServiceImpl implements PlatoService {
     public PlatoResponseDTO crearPlato(Plato plato) {
         log.info("Creando plato con nombre '{}'", plato.getNombre());
         
-        boolean nombreDuplicado = platos.values().stream()
-                .anyMatch(p -> p.getNombre().equalsIgnoreCase(plato.getNombre()));
-                
-        if (nombreDuplicado) {
+        if (nombreExiste(plato.getNombre())) {
             log.warn("Intento de crear plato duplicado: '{}'", plato.getNombre());
             throw new PlatoAlreadyExistsException("Ya existe un plato con ese nombre: " + plato.getNombre());
         }
@@ -91,11 +85,7 @@ public class PlatoServiceImpl implements PlatoService {
     @Override
     public PlatoResponseDTO actualizarPlato(Long id, Plato platoActualizado) {
         log.info("Actualizando plato con ID: {}", id);
-        Plato platoExistente = platos.get(id);
-        if (platoExistente == null) {
-            log.error("No se puede actualizar. Plato no encontrado con ID: {}", id);
-            throw new RuntimeException("Plato no encontrado con ID: " + id);
-        }
+        Plato platoExistente = buscarOLanzar(id);
         platoExistente.setNombre(platoActualizado.getNombre());
         platoExistente.setPrecio(platoActualizado.getPrecio());
         platoExistente.setCategoria(platoActualizado.getCategoria());
@@ -119,6 +109,18 @@ public class PlatoServiceImpl implements PlatoService {
         boolean resultado = plato != null && Boolean.TRUE.equals(plato.getDisponible());
         log.debug("Verificación de disponibilidad para plato ID {}: {}", idPlato, resultado);
         return resultado;
+    }
+
+    // --- Verificar si nombre ya existe (devuelve boolean) -------------------
+    private boolean nombreExiste(String nombre) {
+        return platos.values().stream()
+                .anyMatch(p -> p.getNombre().equalsIgnoreCase(nombre));
+    }
+
+    // --- Buscar por id o lanzar excepción -------------------
+    private Plato buscarOLanzar(Long id) {
+        return Optional.ofNullable(platos.get(id))
+                .orElseThrow(() -> new PlatoNotFoundException("Plato no encontrado con id: " + id));
     }
 }
 
