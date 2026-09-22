@@ -1,0 +1,13 @@
+server:
+  port: 8081
+
+logging:
+  level:
+    root: INFO
+    com.restaurante: DEBUG
+  file:
+    name: logs/api.log
+
+restaurante:
+  api:
+    key: "123456789"

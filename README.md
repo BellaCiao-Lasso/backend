@@ -25,7 +25,7 @@ Desarrollar una solución de gestión para BellaCiao que permita optimizar
 el manejo de pedidos, inventario, facturación y preparación en cocina,
 manteniendo una experiencia de usuario sencilla y eficiente.
 ## Diagramas
-Los diagramas de arquitectura se pueden encontrar en la carpeta `docs/images/`.
+
 
 
 
