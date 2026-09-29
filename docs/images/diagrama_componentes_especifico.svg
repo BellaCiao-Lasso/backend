@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 780" width="1100" height="780" style="background:#ffffff; font-family:'Segoe UI', Arial, sans-serif;">
+  <defs>
+    <!-- Component Icon Marker -->
+    <g id="comp-icon-spec">
+      <rect x="0" y="0" width="22" height="16" fill="none" stroke="#37474f" stroke-width="1.5" rx="2"/>
+      <rect x="-4" y="2" width="8" height="4" fill="#cfd8dc" stroke="#37474f" stroke-width="1.2"/>
+      <rect x="-4" y="9" width="8" height="4" fill="#cfd8dc" stroke="#37474f" stroke-width="1.2"/>
+    </g>
+    <!-- Arrow Marker -->
+    <marker id="arrow-spec" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#37474f"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="550" y="40" text-anchor="middle" font-size="24" font-weight="bold" fill="#263238">DIAGRAMA DE COMPONENTES ESPECÍFICO — BELLA CIAO</text>
+  <text x="550" y="65" text-anchor="middle" font-size="14" fill="#607d8b">Arquitectura Interna del Servicio de Pedidos y Platos (com.restaurante)</text>
+
+  <!-- 3D Box Boundary: Order / Plato MicroService -->
+  <!-- Top 3D face -->
+  <polygon points="120,130 960,130 1000,90 160,90" fill="#e0e0e0" stroke="#546e7a" stroke-width="1.5"/>
+  <!-- Right 3D face -->
+  <polygon points="960,130 1000,90 1000,560 960,600" fill="#cfd8dc" stroke="#546e7a" stroke-width="1.5"/>
+  <!-- Front face -->
+  <rect x="120" y="130" width="840" height="470" fill="#fafafa" stroke="#546e7a" stroke-width="1.8"/>
+  <text x="540" y="155" text-anchor="middle" font-size="15" font-weight="bold" fill="#37474f">Order / Plato MicroService</text>
+
+  <!-- 1. Order / Plato Controller -->
+  <g transform="translate(160, 240)">
+    <rect width="180" height="80" rx="4" fill="#ffffff" stroke="#455a64" stroke-width="1.8" filter="drop-shadow(2px 3px 4px rgba(0,0,0,0.06))"/>
+    <use href="#comp-icon-spec" x="145" y="10"/>
+    <text x="75" y="38" text-anchor="middle" font-size="13" font-weight="bold" fill="#263238">Order Controller</text>
+    <text x="75" y="56" text-anchor="middle" font-size="10" fill="#546e7a">(PlatoController)</text>
+  </g>
+
+  <!-- 2. Order / Plato Service -->
+  <g transform="translate(450, 240)">
+    <rect width="180" height="80" rx="4" fill="#ffffff" stroke="#455a64" stroke-width="1.8" filter="drop-shadow(2px 3px 4px rgba(0,0,0,0.06))"/>
+    <use href="#comp-icon-spec" x="145" y="10"/>
+    <text x="75" y="38" text-anchor="middle" font-size="13" font-weight="bold" fill="#263238">Order Service</text>
+    <text x="75" y="56" text-anchor="middle" font-size="10" fill="#546e7a">(PlatoServiceImpl)</text>
+  </g>
+
+  <!-- 3. Utils Component -->
+  <g transform="translate(730, 240)">
+    <rect width="160" height="80" rx="4" fill="#ffffff" stroke="#455a64" stroke-width="1.8" filter="drop-shadow(2px 3px 4px rgba(0,0,0,0.06))"/>
+    <use href="#comp-icon-spec" x="125" y="10"/>
+    <text x="70" y="36" text-anchor="middle" font-size="14" font-weight="bold" fill="#263238">Utils</text>
+    <text x="70" y="52" text-anchor="middle" font-size="10" fill="#546e7a">PlatoValidator</text>
+    <text x="70" y="66" text-anchor="middle" font-size="10" fill="#546e7a">EntityMapper</text>
+  </g>
+
+  <!-- 4. Order / Plato Repository (Bottom Left inside) -->
+  <g transform="translate(450, 440)">
+    <rect width="180" height="80" rx="4" fill="#ffffff" stroke="#455a64" stroke-width="1.8" filter="drop-shadow(2px 3px 4px rgba(0,0,0,0.06))"/>
+    <use href="#comp-icon-spec" x="145" y="10"/>
+    <text x="75" y="38" text-anchor="middle" font-size="13" font-weight="bold" fill="#263238">Order Repository</text>
+    <text x="75" y="56" text-anchor="middle" font-size="10" fill="#546e7a">(PlatoRepository)</text>
+  </g>
+
+  <!-- 5. Payment Client (Bottom Right inside) -->
+  <g transform="translate(730, 440)">
+    <rect width="160" height="80" rx="4" fill="#ffffff" stroke="#455a64" stroke-width="1.8" filter="drop-shadow(2px 3px 4px rgba(0,0,0,0.06))"/>
+    <use href="#comp-icon-spec" x="125" y="10"/>
+    <text x="70" y="38" text-anchor="middle" font-size="13" font-weight="bold" fill="#263238">Payment Client</text>
+    <text x="70" y="56" text-anchor="middle" font-size="10" fill="#546e7a">PSE / Webhook Adapter</text>
+  </g>
+
+  <!-- 6. PSE Client (Outside Boundary at Bottom) -->
+  <g transform="translate(730, 650)">
+    <rect width="160" height="75" rx="4" fill="#ffffff" stroke="#455a64" stroke-width="1.8" filter="drop-shadow(2px 3px 4px rgba(0,0,0,0.06))"/>
+    <use href="#comp-icon-spec" x="125" y="10"/>
+    <text x="70" y="36" text-anchor="middle" font-size="14" font-weight="bold" fill="#263238">PSE Client</text>
+    <text x="70" y="54" text-anchor="middle" font-size="10" fill="#546e7a">Pasarela Externa</text>
+  </g>
+
+  <!-- 7. Database Engine (Outside at Bottom Left) -->
+  <g transform="translate(230, 640)">
+    <path d="M 0 20 A 45 10 0 0 0 90 20 L 90 60 A 45 10 0 0 1 0 60 Z" fill="#eceff1" stroke="#455a64" stroke-width="1.8"/>
+    <ellipse cx="45" cy="20" rx="45" ry="10" fill="#cfd8dc" stroke="#455a64" stroke-width="1.8"/>
+    <text x="45" y="44" text-anchor="middle" font-size="12" font-weight="bold" fill="#263238">H2 Server /</text>
+    <text x="45" y="58" text-anchor="middle" font-size="11" fill="#37474f">PostgreSQL</text>
+  </g>
+
+  <!-- INTERFACES (Lollipops / Sockets) & CONNECTIONS -->
+  
+  <!-- Controller to Service Interface -->
+  <line x1="340" y1="280" x2="385" y2="280" stroke="#37474f" stroke-width="1.6"/>
+  <!-- Socket on Controller side -->
+  <path d="M 388 272 A 8 8 0 0 1 388 288" fill="none" stroke="#37474f" stroke-width="2"/>
+  <!-- Lollipop on Service side -->
+  <circle cx="394" cy="280" r="5" fill="#ffffff" stroke="#37474f" stroke-width="1.8"/>
+  <line x1="399" y1="280" x2="450" y2="280" stroke="#37474f" stroke-width="1.6"/>
+
+  <!-- Service to Utils (Direct association) -->
+  <line x1="630" y1="280" x2="730" y2="280" stroke="#37474f" stroke-width="1.6"/>
+
+  <!-- Service to Repository Interface (Vertical) -->
+  <line x1="535" y1="320" x2="535" y2="368" stroke="#37474f" stroke-width="1.6"/>
+  <!-- Lollipop on Repo side -->
+  <circle cx="535" cy="374" r="5" fill="#ffffff" stroke="#37474f" stroke-width="1.8"/>
+  <!-- Socket on Service side -->
+  <path d="M 527 380 A 8 8 0 0 1 543 380" fill="none" stroke="#37474f" stroke-width="2"/>
+  <line x1="535" y1="384" x2="535" y2="440" stroke="#37474f" stroke-width="1.6"/>
+
+  <!-- Service to Payment Client Interface (L-shaped) -->
+  <line x1="590" y1="320" x2="590" y2="360" stroke="#37474f" stroke-width="1.6"/>
+  <line x1="590" y1="360" x2="810" y2="360" stroke="#37474f" stroke-width="1.6"/>
+  <line x1="810" y1="360" x2="810" y2="395" stroke="#37474f" stroke-width="1.6"/>
+  <!-- Lollipop / Socket -->
+  <circle cx="810" cy="401" r="5" fill="#ffffff" stroke="#37474f" stroke-width="1.8"/>
+  <path d="M 802 407 A 8 8 0 0 1 818 407" fill="none" stroke="#37474f" stroke-width="2"/>
+  <line x1="810" y1="411" x2="810" y2="440" stroke="#37474f" stroke-width="1.6"/>
+
+  <!-- Payment Client to PSE Client (Through boundary) -->
+  <line x1="810" y1="520" x2="810" y2="575" stroke="#37474f" stroke-width="1.6"/>
+  <circle cx="810" cy="581" r="5" fill="#ffffff" stroke="#37474f" stroke-width="1.8"/>
+  <path d="M 802 587 A 8 8 0 0 1 818 587" fill="none" stroke="#37474f" stroke-width="2"/>
+  <line x1="810" y1="591" x2="810" y2="650" stroke="#37474f" stroke-width="1.6"/>
+
+  <!-- Repository to Database -->
+  <line x1="480" y1="520" x2="480" y2="570" stroke="#37474f" stroke-width="1.6"/>
+  <line x1="480" y1="570" x2="280" y2="570" stroke="#37474f" stroke-width="1.6"/>
+  <line x1="280" y1="570" x2="280" y2="635" stroke="#37474f" stroke-width="1.6" marker-end="url(#arrow-spec)"/>
+  <text x="370" y="563" font-size="10" fill="#546e7a">Spring Data JPA / HikariCP</text>
+
+  <!-- Legend -->
+  <g transform="translate(120, 740)">
+    <text x="0" y="0" font-size="11" fill="#78909c">
+      * Basado en la especificación UML 2.0: Componentes modulares con interfaces 'Provided' (círculo) y 'Required' (semicírculo).
+    </text>
+  </g>
+</svg>

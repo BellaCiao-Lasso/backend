@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 780" width="1100" height="780" style="background:#ffffff; font-family:'Segoe UI', Arial, sans-serif;">
+  <defs>
+    <!-- Component Icon Marker -->
+    <g id="comp-icon">
+      <rect x="0" y="0" width="22" height="16" fill="none" stroke="#37474f" stroke-width="1.5" rx="2"/>
+      <rect x="-4" y="2" width="8" height="4" fill="#cfd8dc" stroke="#37474f" stroke-width="1.2"/>
+      <rect x="-4" y="9" width="8" height="4" fill="#cfd8dc" stroke="#37474f" stroke-width="1.2"/>
+    </g>
+    <!-- Arrow Marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#37474f"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="550" y="40" text-anchor="middle" font-size="24" font-weight="bold" fill="#263238">DIAGRAMA DE COMPONENTES GENERAL — BELLACIAO</text>
+  <text x="550" y="65" text-anchor="middle" font-size="14" fill="#607d8b">Arquitectura Global, Responsabilidades, Interfaces y Conexiones Externas</text>
+
+  <!-- External Systems Container (Top/Right) -->
+  <!-- Notification Service -->
+  <g transform="translate(740, 85)">
+    <rect width="180" height="65" rx="4" fill="#ffffff" stroke="#455a64" stroke-width="1.8" filter="drop-shadow(2px 3px 4px rgba(0,0,0,0.06))"/>
+    <use href="#comp-icon" x="150" y="8"/>
+    <text x="80" y="30" text-anchor="middle" font-size="13" font-weight="bold" fill="#263238">Notification Service</text>
+    <text x="80" y="48" text-anchor="middle" font-size="11" fill="#546e7a">Notificaciones Push / KDS</text>
+  </g>
+
+  <!-- Message Broker / Kafka -->
+  <g transform="translate(970, 160)">
+    <!-- Cylinder -->
+    <path d="M 0 20 A 45 12 0 0 0 90 20 L 90 60 A 45 12 0 0 1 0 60 Z" fill="#eceff1" stroke="#455a64" stroke-width="1.8"/>
+    <ellipse cx="45" cy="20" rx="45" ry="12" fill="#cfd8dc" stroke="#455a64" stroke-width="1.8"/>
+    <text x="45" y="46" text-anchor="middle" font-size="13" font-weight="bold" fill="#263238">Kafka</text>
+    <text x="45" y="60" text-anchor="middle" font-size="10" fill="#546e7a">Event Stream</text>
+  </g>
+
+  <!-- Left: Long Code File / Entrada Insumos -->
+  <g transform="translate(40, 240)">
+    <rect width="160" height="65" rx="4" fill="#ffffff" stroke="#455a64" stroke-width="1.8" filter="drop-shadow(2px 3px 4px rgba(0,0,0,0.06))"/>
+    <use href="#comp-icon" x="130" y="8"/>
+    <text x="70" y="30" text-anchor="middle" font-size="13" font-weight="bold" fill="#263238">Long Code File</text>
+    <text x="70" y="48" text-anchor="middle" font-size="11" fill="#546e7a">Recetas e Insumos</text>
+  </g>
+
+  <!-- MAIN BOUNDARY: BELLACIAO SYSTEM (MIGRATION DOMAIN) -->
+  <rect x="280" y="160" width="630" height="480" rx="6" fill="#f8fafd" stroke="#1976d2" stroke-width="2.2"/>
+  <rect x="280" y="160" width="220" height="28" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="4"/>
+  <text x="295" y="180" font-size="13" font-weight="bold" fill="#0d47a1">MIGRATION / BELLACIAO CORE</text>
+
+  <!-- Internal Component 1: dineromail-coupons-processor / menu-catalog-processor (green in slide) -->
+  <g transform="translate(350, 210)">
+    <rect width="320" height="100" rx="5" fill="#a5d6a7" stroke="#2e7d32" stroke-width="2" filter="drop-shadow(3px 4px 6px rgba(0,0,0,0.08))"/>
+    <use href="#comp-icon" x="285" y="10"/>
+    <text x="150" y="38" text-anchor="middle" font-size="14" font-weight="bold" fill="#1b5e20">menu-catalog-processor</text>
+    <text x="150" y="58" text-anchor="middle" font-size="12" fill="#2e7d32">(Gestión Carta, Platos y Precios)</text>
+    <text x="150" y="78" text-anchor="middle" font-size="11" fill="#388e3c">com.restaurante.service.MenuService</text>
+  </g>
+
+  <!-- Internal Component 2: coupons-processing-service / order-processing-service -->
+  <g transform="translate(350, 420)">
+    <rect width="320" height="100" rx="5" fill="#ffffff" stroke="#455a64" stroke-width="1.8" filter="drop-shadow(3px 4px 6px rgba(0,0,0,0.08))"/>
+    <use href="#comp-icon" x="285" y="10"/>
+    <text x="150" y="38" text-anchor="middle" font-size="14" font-weight="bold" fill="#263238">order-processing-service</text>
+    <text x="150" y="58" text-anchor="middle" font-size="12" fill="#546e7a">(Gestión Pedidos, Comandas y Mesas)</text>
+    <text x="150" y="78" text-anchor="middle" font-size="11" fill="#78909c">com.restaurante.service.PedidoService</text>
+  </g>
+
+  <!-- External Database: DB bellaciao_db -->
+  <g transform="translate(960, 410)">
+    <path d="M 0 25 A 50 14 0 0 0 100 25 L 100 75 A 50 14 0 0 1 0 75 Z" fill="#eceff1" stroke="#455a64" stroke-width="1.8"/>
+    <ellipse cx="50" cy="25" rx="50" ry="14" fill="#cfd8dc" stroke="#455a64" stroke-width="1.8"/>
+    <text x="50" y="54" text-anchor="middle" font-size="12" font-weight="bold" fill="#263238">DB:</text>
+    <text x="50" y="70" text-anchor="middle" font-size="11" font-weight="bold" fill="#37474f">bellaciao_db</text>
+  </g>
+
+  <!-- Boundary PPS (Bottom Left) -->
+  <g transform="translate(50, 520)">
+    <rect width="180" height="130" rx="6" fill="#f5f5f5" stroke="#1976d2" stroke-width="1.8"/>
+    <text x="90" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="#0d47a1">PPS (Pagos)</text>
+    
+    <g transform="translate(15, 40)">
+      <rect width="150" height="65" rx="4" fill="#ffffff" stroke="#455a64" stroke-width="1.5"/>
+      <use href="#comp-icon" x="120" y="8"/>
+      <text x="70" y="32" text-anchor="middle" font-size="11" font-weight="bold" fill="#263238">AccountsSettlement</text>
+      <text x="70" y="48" text-anchor="middle" font-size="10" fill="#607d8b">Liquidación Cuentas</text>
+    </g>
+  </g>
+
+  <!-- Payments API Component (Bottom Right Inside Boundary) -->
+  <g transform="translate(710, 540)">
+    <rect width="170" height="65" rx="4" fill="#ffffff" stroke="#455a64" stroke-width="1.8"/>
+    <use href="#comp-icon" x="140" y="8"/>
+    <text x="80" y="32" text-anchor="middle" font-size="13" font-weight="bold" fill="#263238">Payments API</text>
+    <text x="80" y="48" text-anchor="middle" font-size="11" fill="#546e7a">Pasarela PSE / Tarjetas</text>
+  </g>
+
+  <!-- INTERFACE LOLLIPOPS & CONNECTIONS -->
+  
+  <!-- Long Code File to menu-catalog via SFTP -->
+  <line x1="200" y1="272" x2="250" y2="272" stroke="#37474f" stroke-width="1.5"/>
+  <circle cx="256" cy="272" r="6" fill="none" stroke="#37474f" stroke-width="1.8"/>
+  <circle cx="266" cy="272" r="4" fill="#37474f"/>
+  <line x1="270" y1="272" x2="350" y2="272" stroke="#37474f" stroke-width="1.5"/>
+  <text x="258" y="295" text-anchor="middle" font-size="11" font-weight="bold" fill="#455a64">SFTP</text>
+
+  <!-- Notification Service to Kafka -->
+  <line x1="920" y1="117" x2="1015" y2="117" stroke="#37474f" stroke-width="1.5"/>
+  <line x1="1015" y1="117" x2="1015" y2="155" stroke="#37474f" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- menu-catalog-service to Kafka -->
+  <line x1="670" y1="235" x2="965" y2="195" stroke="#37474f" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="800" y="205" font-size="10" fill="#546e7a">Eventos Menú</text>
+
+  <!-- menu-catalog-service to DB -->
+  <line x1="670" y1="285" x2="910" y2="285" stroke="#37474f" stroke-width="1.5"/>
+  <line x1="910" y1="285" x2="910" y2="440" stroke="#37474f" stroke-width="1.5"/>
+  <line x1="910" y1="440" x2="955" y2="440" stroke="#37474f" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- order-processing-service to DB -->
+  <line x1="670" y1="470" x2="955" y2="470" stroke="#37474f" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="800" y="462" font-size="10" fill="#546e7a">JPA SQL Queries</text>
+
+  <!-- order-processing-service to Payments API -->
+  <line x1="510" y1="520" x2="510" y2="572" stroke="#37474f" stroke-width="1.5"/>
+  <line x1="510" y1="572" x2="705" y2="572" stroke="#37474f" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- order-processing-service to AccountsSettlement (PPS) -->
+  <line x1="420" y1="520" x2="420" y2="600" stroke="#37474f" stroke-width="1.5"/>
+  <line x1="420" y1="600" x2="235" y2="600" stroke="#37474f" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- menu-catalog to order-processing (Internal sync) -->
+  <line x1="510" y1="310" x2="510" y2="415" stroke="#2e7d32" stroke-width="1.8" stroke-dasharray="4,4" marker-end="url(#arrow)"/>
+  <text x="518" y="365" font-size="11" font-weight="bold" fill="#2e7d32">Consulta Disponibilidad</text>
+
+  <!-- Legend -->
+  <g transform="translate(50, 715)">
+    <rect width="1000" height="45" rx="4" fill="#f5f5f5" stroke="#cfd8dc"/>
+    <text x="20" y="27" font-size="12" fill="#37474f">
+      <tspan font-weight="bold">Convenciones UML 2.0:</tspan> Cuadros con pestañas representan Componentes de Software; cilindros representan Almacenes Persistentes; círculos representan Interfaces Requeridas/Provistas (Lollipop/Socket).
+    </text>
+  </g>
+</svg>

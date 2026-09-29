@@ -1,0 +1,37 @@
+"ROL","FUNCIONALIDADES QUE PUEDE HACER","FUNCIONALIDADES QUE NO PUEDE HACER"
+"Administrador / Gerente","1. Crear, actualizar y eliminar platos de la carta gastronómica.
+2. Modificar la disponibilidad de platos (disponible: true/false).
+3. Modificar precios, ingredientes y categorías del menú.
+4. Crear, editar y configurar mesas del restaurante (número, capacidad).
+5. Consultar reportes consolidados de ventas, ocupación y facturación.
+6. Administrar credenciales y roles del personal.","1. Modificar o alterar comandas ya cobradas y facturadas ante la DIAN.
+2. Eliminar registros de auditoría de transacciones fiscales."
+"Mesero","1. Consultar la carta activa, descripciones y disponibilidad de platos.
+2. Consultar el estado y ocupación de las mesas asignadas.
+3. Crear nuevos pedidos asociados a una mesa en sala.
+4. Adicionar platos o ítems a pedidos abiertos antes de su cobro.
+5. Solicitar la precuenta de una mesa para presentar al cliente.","1. Crear, editar o eliminar platos de la carta o modificar sus precios.
+2. Marcar platos como listos en la cocina (exclusivo de cocina).
+3. Cobrar pedidos o emitir facturas fiscales ante la DIAN.
+4. Cancelar pedidos enviados a cocina sin autorización del administrador."
+"Chef / Personal de Cocina","1. Visualizar comandas entrantes en tiempo real en la pantalla KDS.
+2. Cambiar el estado del pedido: RECIBIDO -> EN_PREPARACION -> LISTO.
+3. Notificar a sala cuando los platos están listos para despacho.
+4. Reportar al administrador agotamiento de insumos en cocina.","1. Tomar o registrar pedidos de mesas en sala.
+2. Modificar precios de los platos o aplicar cobros.
+3. Modificar la asignación o número de mesas de los clientes.
+4. Cancelar o eliminar pedidos de comensales."
+"Cajero","1. Consultar el detalle de ítems y totales de mesas con cuenta solicitada.
+2. Registrar pagos en efectivo, datáfono o pasarela electrónica (PSE).
+3. Aplicar descuentos comerciales o propinas autorizadas.
+4. Emitir factura de venta y transmitir documento a la DIAN.
+5. Cerrar el pedido y liberar la mesa para nuevos clientes.","1. Modificar recetas, platos o precios del menú gastronómico.
+2. Modificar el estado de preparación culinaria en cocina.
+3. Alterar valores de ítems consumidos sin autorización del administrador."
+"Comensal / Cliente","1. Escanear código QR en mesa y consultar el menú digital interactivo.
+2. Filtrar platos por categoría, ingredientes y disponibilidad activa.
+3. Visualizar precios oficiales y tiempos estimados de preparación.
+4. Consultar el estado de avance de su pedido (en cocina / servido).","1. Crear, editar o eliminar platos, precios o ingredientes del menú.
+2. Cambiar el estado de preparación de las órdenes.
+3. Consultar las cuentas o datos de otras mesas del restaurante.
+4. Modificar una orden confirmada sin la asistencia del mesero."

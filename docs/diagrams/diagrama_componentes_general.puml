@@ -1,0 +1,78 @@
+@startuml Diagrama_Componentes_General_BellaCiao
+!theme plain
+skinparam componentStyle uml2
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam roundCorner 8
+skinparam arrowColor #333333
+
+title DIAGRAMA DE COMPONENTES GENERAL - SISTEMA BELLACIAO
+
+package "Sistemas y Canales Externos" {
+    [Portal Web Clientes\n(Frontend SPA)] as WebClient <<component>>
+    [Tablet / POS Mesero\n(Frontend Móvil)] as POSClient <<component>>
+    [Pantalla KDS Cocina] as KDSClient <<component>>
+    [Carga Insumos / Recetas] as SFTPClient <<component>>
+}
+
+cloud "Broker de Eventos" {
+    queue "Kafka / Event Bus\n(order-events, kitchen-topics)" as Kafka
+}
+
+package "Servicios Externos de Integración" {
+    [Notification Service\n(KDS / Push / SMS)] as NotifService <<component>>
+    
+    package "Pasarela de Pagos (PPS)" {
+        [Payments API\n(Checkout & Tokenization)] as PaymentsAPI <<component>>
+        [AccountsSettlement\n(Liquidación Contable)] as Settlement <<component>>
+    }
+    
+    [Servicio Facturación DIAN\n(Emisión XML/PDF)] as DianService <<component>>
+}
+
+database "Almacenamiento Persistente" {
+    database "DB: bellaciao_db\n(H2 / PostgreSQL)" as Database
+}
+
+package "BELLACIAO PLATFORM (Core MicroServices)" as Platform #F0F4F8 {
+    
+    interface "HTTP/REST API" as RestMenuAPI
+    interface "HTTP/REST API" as RestOrderAPI
+    interface "HTTP/REST API" as RestTableAPI
+    
+    [menu-catalog-service\n(Gestión de Carta y Platos)] as MenuComp <<component>> #E8F5E9
+    [order-processing-service\n(Gestión de Pedidos y Líneas)] as OrderComp <<component>> #E1F5FE
+    [table-management-service\n(Control de Mesas y Ocupación)] as TableComp <<component>> #FFF3E0
+
+    ' Conexiones de API
+    RestMenuAPI - MenuComp
+    RestOrderAPI - OrderComp
+    RestTableAPI - TableComp
+    
+    ' Interacción entre componentes core
+    OrderComp ..> MenuComp : <<consulta>>\nprecios y disponibilidad
+    OrderComp ..> TableComp : <<actualiza>>\nestado de mesa
+    
+    ' Conexión con base de datos
+    MenuComp --> Database : JPA / Hibernate\n(platos)
+    OrderComp --> Database : JPA / Hibernate\n(pedidos, items)
+    TableComp --> Database : JPA / Hibernate\n(mesas)
+}
+
+' Canales a Plataforma
+WebClient ..> RestMenuAPI : GET /api/v1/menu
+POSClient ..> RestOrderAPI : POST /api/v1/pedidos
+POSClient ..> RestTableAPI : GET /api/v1/mesas
+SFTPClient ..> MenuComp : Carga masiva (CSV/JSON)
+
+' Asincronía y Notificaciones
+OrderComp --> Kafka : Publica "PedidoCreado",\n"PedidoListo"
+Kafka --> NotifService : Consume eventos
+NotifService --> KDSClient : Despacha orden a cocina
+
+' Salidas hacia pagos y facturación
+OrderComp ..> PaymentsAPI : Procesa cobro
+PaymentsAPI --> Settlement : Concilia pagos
+OrderComp ..> DianService : Genera factura fiscal
+
+@enduml

@@ -1,0 +1,53 @@
+@startuml Diagrama_Componentes_Especifico_BellaCiao
+!theme plain
+skinparam componentStyle uml2
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam roundCorner 8
+skinparam arrowColor #333333
+
+title DIAGRAMA DE COMPONENTES ESPECÍFICO - MÓDULO DE PEDIDOS Y PLATOS (BELLACIAO)
+
+node "Order / Plato MicroService (com.restaurante)" as AppService #FDFDFD {
+
+    [OrderController / PlatoController\n(Capa Web / REST Endpoints)] as Controller <<component>> #F1F8E9
+    
+    interface "OrderService API" as IService
+    interface "OrderRepository API" as IRepo
+    interface "PaymentClient API" as IPaymentClient
+
+    [OrderServiceImpl / PlatoServiceImpl\n(Lógica de Negocio y Transacciones)] as ServiceImpl <<component>> #E8F5E9
+    
+    [Utils & Helpers\n(PlatoValidator / EntityMappers)] as Utils <<component>> #FFF9C4
+    
+    [OrderRepository / PlatoRepository\n(Spring Data JPA & JPQL)] as Repo <<component>> #E1F5FE
+    
+    [Payment Client\n(Adaptador de Pasarela)] as PaymentClient <<component>> #FCE4EC
+
+    ' Relaciones internas con notación de interfaz (Lollipop / Socket)
+    Controller -( IService : invoca lógica
+    IService - ServiceImpl : implementa
+    
+    ServiceImpl ..> Utils : validaciones y mappers
+    
+    ServiceImpl -( IRepo : operaciones CRUD
+    IRepo - Repo : implementa
+    
+    ServiceImpl -( IPaymentClient : cobro de comanda
+    IPaymentClient - PaymentClient : implementa
+}
+
+' Componentes fuera del microservicio
+interface "PSE Gateway Interface" as IPSE
+[PSE Client / Pasarela Externa] as PSEClient <<component>> #EDE7F6
+IPSE - PSEClient
+
+PaymentClient -( IPSE : petición externa HTTPS
+
+database "DB: bellaciao_db\n(H2 Server / PostgreSQL)" as DB #ECEFF1 {
+    [Tablas Relacionales:\nplatos, mesas, pedidos, items_pedido]
+}
+
+Repo --> DB : JDBC / SQL (Pool HikariCP)
+
+@enduml

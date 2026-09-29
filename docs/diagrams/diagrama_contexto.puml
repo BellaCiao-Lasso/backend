@@ -1,0 +1,37 @@
+@startuml Diagrama_Contexto_BellaCiao
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam roundCorner 8
+skinparam arrowColor #37474f
+
+title DIAGRAMA DE CONTEXTO (C4 NIVEL 1) - SISTEMA BELLACIAO
+
+' Actores / Usuarios del Restaurante
+actor "Administrador / Gerente" as Admin #E1F5FE
+actor "Mesero" as Mesero #FFF3E0
+actor "Chef / Cocinero" as Chef #FCE4EC
+actor "Cajero" as Cajero #E8F5E9
+actor "Comensal / Cliente" as Cliente #F3E5F5
+
+' Sistema Central
+rectangle "Sistema Central BellaCiao\n[Software System]\n\nPlataforma de gestión integral para la trattoria:\nadministración de menú, comandas, mesas y facturación" as BellaCiao #1976D2;text:white
+
+' Sistemas Externos
+rectangle "Pasarela de Pagos\n[External System]\n(PSE, Stripe, Datáfono)" as PasarelaPago #ECEFF1
+rectangle "Facturación Electrónica DIAN\n[External System]\n(Validación previa y emisión fiscal)" as DianService #ECEFF1
+rectangle "Servicio de Notificaciones\n[External System]\n(Pantalla KDS, WhatsApp, SMS)" as NotifService #ECEFF1
+
+' Interacciones de Actores con el Sistema
+Admin --> BellaCiao : [HTTPS] Crea/edita platos,\nmodifica disponibilidad y mesas,\nconsulta reportes
+Mesero --> BellaCiao : [HTTPS] Consulta mesas y menú,\ntoma pedidos de clientes y adiciona ítems
+Chef --> BellaCiao : [HTTPS] Visualiza comandas en cocina,\ncambia estado a EN_PREPARACION y LISTO
+Cajero --> BellaCiao : [HTTPS] Registra pagos,\naplica descuentos y cierra pedidos/mesas
+Cliente --> BellaCiao : [HTTPS] Consulta la carta digital,\nprecios y disponibilidad en tiempo real
+
+' Interacciones del Sistema con Servicios Externos
+BellaCiao --> PasarelaPago : [REST/JSON] Solicita autorización\ny cobro de pagos electrónicos
+BellaCiao --> DianService : [SOAP/REST] Envía factura electrónica\npara validación y firma fiscal
+BellaCiao --> NotifService : [Eventos] Despacha alertas a KDS cocina\ny notificaciones de estado al cliente
+
+@enduml
