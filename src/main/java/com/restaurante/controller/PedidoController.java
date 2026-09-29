@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/pedidos")
 @RequiredArgsConstructor
-@Tag(name = "Pedidos v1", description = "Gestión de los pedidos de las mesas")
+@Tag(name = "Pedidos", description = "Gestión de los pedidos de las mesas")
 public class PedidoController {
 
     private final PedidoService pedidoService;

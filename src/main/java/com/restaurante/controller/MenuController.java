@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/menu")
 @RequiredArgsConstructor
-@Tag(name = "Menú v1", description = "Consulta del menú disponible para los clientes")
+@Tag(name = "Menú", description = "Consulta del menú disponible para los clientes")
 public class MenuController {
 
     private final PlatoService platoService;
@@ -29,7 +29,7 @@ public class MenuController {
     })
     @GetMapping
     public ResponseEntity<List<PlatoResponseDTO>> obtenerMenuCompleto() {
-        log.info("GET /api/menu - Solicitando menú completo de platos disponibles");
+        log.info("GET /api/v1/menu - Solicitando menú completo de platos disponibles");
         List<PlatoResponseDTO> disponibles = platoService.obtenerDisponibles();
         log.info("Menú disponible: {} platos encontrados", disponibles.size());
         return ResponseEntity.ok(disponibles);
@@ -42,7 +42,7 @@ public class MenuController {
     })
     @GetMapping("/categoria/{categoria}")
     public ResponseEntity<List<PlatoResponseDTO>> obtenerMenuPorCategoria(@PathVariable String categoria) {
-        log.info("GET /api/menu/categoria/{} - Filtrando menú por categoría", categoria);
+        log.info("GET /api/v1/menu/categoria/{} - Filtrando menú por categoría", categoria);
         List<PlatoResponseDTO> filtrados = platoService.obtenerPorCategoria(categoria);
         log.info("Se encontraron {} platos en la categoría '{}'", filtrados.size(), categoria);
         return ResponseEntity.ok(filtrados);

@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/platos")
 @RequiredArgsConstructor
-@Tag(name = "Platos v1", description = "Gestión de la carta del restaurante")
+@Tag(name = "Platos", description = "Gestión de la carta del restaurante")
 public class PlatoController {
 
     private final PlatoService platoService;
@@ -36,7 +36,7 @@ public class PlatoController {
     })
     @GetMapping
     public ResponseEntity<List<PlatoResponseDTO>> listarPlatos() {
-        log.info("GET /api/platos - Solicitando lista completa de platos");
+        log.info("GET /api/v1/platos - Solicitando lista completa de platos");
         List<PlatoResponseDTO> platos = platoService.obtenerTodos();
         log.info("Se encontraron {} platos en la carta", platos.size());
         return ResponseEntity.ok(platos);
@@ -50,8 +50,19 @@ public class PlatoController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<PlatoResponseDTO> obtenerPlato(@PathVariable Long id) {
-        log.info("GET /api/platos/{} - Buscando plato por ID", id);
+        log.info("GET /api/v1/platos/{} - Buscando plato por ID", id);
         return ResponseEntity.ok(platoService.obtenerPorId(id));
+    }
+
+    @Operation(summary = "Buscar plato por nombre", description = "Busca un plato por su nombre usando consulta JPQL personalizada")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Plato encontrado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Plato no encontrado con el nombre proporcionado")
+    })
+    @GetMapping("/nombre/{nombre}")
+    public ResponseEntity<PlatoResponseDTO> buscarPorNombre(@PathVariable String nombre) {
+        log.info("GET /api/v1/platos/nombre/{} - Buscando plato por nombre", nombre);
+        return ResponseEntity.ok(platoService.buscarPorNombre(nombre));
     }
 
     @Operation(summary = "Crear un plato", description = "Agrega un nuevo plato a la carta")
@@ -62,7 +73,7 @@ public class PlatoController {
     })
     @PostMapping
     public ResponseEntity<PlatoResponseDTO> crearPlato(@RequestBody @Valid PlatoRequestDTO platoRequestDTO) {
-        log.info("POST /api/platos - Creando plato: {}", platoRequestDTO.nombre());
+        log.info("POST /api/v1/platos - Creando plato: {}", platoRequestDTO.nombre());
         Plato platoDominio = mapperIn.toDomain(platoRequestDTO);
         PlatoResponseDTO respuesta = platoService.crearPlato(platoDominio);
         log.info("Plato creado exitosamente con ID: {}", respuesta.getId());
@@ -77,10 +88,24 @@ public class PlatoController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<PlatoResponseDTO> actualizarPlato(@PathVariable Long id, @RequestBody @Valid PlatoRequestDTO platoRequestDTO) {
-        log.info("PUT /api/platos/{} - Actualizando plato", id);
+        log.info("PUT /api/v1/platos/{} - Actualizando plato", id);
         Plato platoDominio = mapperIn.toDomain(platoRequestDTO);
         PlatoResponseDTO respuesta = platoService.actualizarPlato(id, platoDominio);
         log.info("Plato con ID {} actualizado correctamente", id);
+        return ResponseEntity.ok(respuesta);
+    }
+
+    @Operation(summary = "Actualizar disponibilidad de un plato", description = "Modifica únicamente la disponibilidad (true/false) de un plato en el menú")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Disponibilidad actualizada correctamente"),
+            @ApiResponse(responseCode = "404", description = "Plato no encontrado con el ID proporcionado")
+    })
+    @PatchMapping("/{id}/disponibilidad")
+    public ResponseEntity<PlatoResponseDTO> actualizarDisponibilidad(
+            @PathVariable Long id,
+            @RequestParam Boolean disponible) {
+        log.info("PATCH /api/v1/platos/{}/disponibilidad - Cambiando disponibilidad a {}", id, disponible);
+        PlatoResponseDTO respuesta = platoService.actualizarDisponibilidad(id, disponible);
         return ResponseEntity.ok(respuesta);
     }
 
@@ -91,7 +116,7 @@ public class PlatoController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarPlato(@PathVariable Long id) {
-        log.warn("DELETE /api/platos/{} - Eliminando plato de la carta", id);
+        log.warn("DELETE /api/v1/platos/{} - Eliminando plato de la carta", id);
         platoService.eliminarPlato(id);
         log.info("Plato con ID {} eliminado correctamente", id);
         return ResponseEntity.noContent().build();

@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/mesas")
 @RequiredArgsConstructor
-@Tag(name = "Mesas v1", description = "Gestión de las mesas del restaurante")
+@Tag(name = "Mesas", description = "Gestión de las mesas del restaurante")
 public class MesaController {
 
     private final MesaService mesaService;
