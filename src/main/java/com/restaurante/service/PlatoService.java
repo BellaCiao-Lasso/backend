@@ -13,7 +13,9 @@ public interface PlatoService {
     // Punto de entrada: Objeto de Dominio, NO DTO
     PlatoResponseDTO crearPlato(Plato plato);
     PlatoResponseDTO actualizarPlato(Long id, Plato plato);
+    PlatoResponseDTO actualizarDisponibilidad(Long id, boolean disponible);
     
     void eliminarPlato(Long id);
     boolean existeYEstaDisponible(Long idPlato);
+    PlatoResponseDTO buscarPorNombre(String nombre);
 }

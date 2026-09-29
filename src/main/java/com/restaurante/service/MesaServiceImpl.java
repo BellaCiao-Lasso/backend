@@ -3,61 +3,57 @@ package com.restaurante.service;
 import com.restaurante.exception.EstadoInvalidoException;
 import com.restaurante.exception.MesaAlreadyExistsException;
 import com.restaurante.exception.MesaNotFoundException;
+import com.restaurante.mapper.MesaEntityMapper;
 import com.restaurante.mapper.MesaMapperIn;
 import com.restaurante.mapper.MesaMapperOut;
 import com.restaurante.model.domain.EstadoMesa;
 import com.restaurante.model.domain.Mesa;
 import com.restaurante.model.dto.request.MesaRequestDTO;
 import com.restaurante.model.dto.response.MesaResponseDTO;
+import com.restaurante.persistence.entity.MesaEntity;
+import com.restaurante.persistence.repository.MesaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MesaServiceImpl implements MesaService {
 
+    private final MesaRepository mesaRepository;
+    private final MesaEntityMapper entityMapper;
     private final MesaMapperIn mapperIn;
     private final MesaMapperOut mapperOut;
-
-    private final Map<Long, Mesa> mesas = new ConcurrentHashMap<>();
-    private final AtomicLong secuencias = new AtomicLong(1);
 
     @Override
     public MesaResponseDTO crearMesa(MesaRequestDTO requestDTO) {
         log.info("Intentando crear mesa número {}", requestDTO.getNumero());
 
-        boolean existeNumero = mesas.values().stream()
-                .anyMatch(m -> m.getNumero().equals(requestDTO.getNumero()));
-
-        if (existeNumero) {
+        if (mesaRepository.existsByNumero(requestDTO.getNumero())) {
             log.warn("El número de mesa {} ya existe", requestDTO.getNumero());
             throw new MesaAlreadyExistsException("Ya existe una mesa con el número " + requestDTO.getNumero());
         }
 
         Mesa mesa = mapperIn.toDomain(requestDTO);
-        mesa.setId(secuencias.getAndIncrement());
         mesa.setEstado(EstadoMesa.DISPONIBLE);
         mesa.setCuentaAbierta(false);
 
-        mesas.put(mesa.getId(), mesa);
-        log.info("Mesa {} creada exitosamente con ID {}", mesa.getNumero(), mesa.getId());
+        MesaEntity entity = entityMapper.toEntity(mesa);
+        entity = mesaRepository.save(entity);
 
-        return mapperOut.toDTO(mesa);
+        log.info("Mesa {} creada exitosamente con ID {}", entity.getNumero(), entity.getId());
+
+        return mapperOut.toDTO(entityMapper.toDomain(entity));
     }
 
     @Override
     public List<MesaResponseDTO> obtenerTodas() {
-        log.info("Obteniendo todas las mesas (Total: {})", mesas.size());
-        return mesas.values().stream()
+        log.info("Obteniendo todas las mesas");
+        return mesaRepository.findAll().stream()
+                .map(entityMapper::toDomain)
                 .map(mapperOut::toDTO)
                 .toList();
     }
@@ -65,15 +61,16 @@ public class MesaServiceImpl implements MesaService {
     @Override
     public List<MesaResponseDTO> obtenerDisponibles() {
         log.info("Buscando mesas disponibles...");
-        return mesas.values().stream()
-                .filter(Mesa::estaDisponible)
+        return mesaRepository.findByEstado(EstadoMesa.DISPONIBLE.name()).stream()
+                .map(entityMapper::toDomain)
                 .map(mapperOut::toDTO)
                 .toList();
     }
 
     @Override
     public MesaResponseDTO cambiarEstado(Long id, String nuevoEstado) {
-        Mesa mesa = buscarOLanzar(id);
+        MesaEntity entity = buscarOLanzar(id);
+        Mesa mesa = entityMapper.toDomain(entity);
         
         EstadoMesa estado;
         try {
@@ -87,34 +84,44 @@ public class MesaServiceImpl implements MesaService {
         }
 
         mesa.setEstado(estado);
+        entity = mesaRepository.save(entityMapper.toEntity(mesa));
+        
         log.info("Mesa {} (ID: {}) cambió a estado {}", mesa.getNumero(), id, estado);
-        return mapperOut.toDTO(mesa);
+        return mapperOut.toDTO(entityMapper.toDomain(entity));
     }
 
     @Override
     public MesaResponseDTO abrirCuenta(Long id) {
-        Mesa mesa = buscarOLanzar(id);
+        MesaEntity entity = buscarOLanzar(id);
+        Mesa mesa = entityMapper.toDomain(entity);
+        
         if (Boolean.TRUE.equals(mesa.getCuentaAbierta())) {
             throw new EstadoInvalidoException("La cuenta de la mesa ya está abierta.");
         }
         mesa.abrirCuenta();
+        
+        entity = mesaRepository.save(entityMapper.toEntity(mesa));
         log.info("Cuenta abierta para mesa {} (ID: {})", mesa.getNumero(), id);
-        return mapperOut.toDTO(mesa);
+        return mapperOut.toDTO(entityMapper.toDomain(entity));
     }
 
     @Override
     public MesaResponseDTO cerrarCuenta(Long id) {
-        Mesa mesa = buscarOLanzar(id);
+        MesaEntity entity = buscarOLanzar(id);
+        Mesa mesa = entityMapper.toDomain(entity);
+        
         if (!Boolean.TRUE.equals(mesa.getCuentaAbierta())) {
             throw new EstadoInvalidoException("La cuenta de la mesa no está abierta.");
         }
         mesa.cerrarCuenta();
+        
+        entity = mesaRepository.save(entityMapper.toEntity(mesa));
         log.info("Cuenta cerrada para mesa {} (ID: {})", mesa.getNumero(), id);
-        return mapperOut.toDTO(mesa);
+        return mapperOut.toDTO(entityMapper.toDomain(entity));
     }
 
-    private Mesa buscarOLanzar(Long id) {
-        return Optional.ofNullable(mesas.get(id))
+    private MesaEntity buscarOLanzar(Long id) {
+        return mesaRepository.findById(id)
                 .orElseThrow(() -> new MesaNotFoundException("Mesa no encontrada con id: " + id));
     }
 }

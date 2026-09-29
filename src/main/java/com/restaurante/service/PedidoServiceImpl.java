@@ -2,6 +2,7 @@ package com.restaurante.service;
 
 import com.restaurante.exception.EstadoInvalidoException;
 import com.restaurante.exception.PedidoNotFoundException;
+import com.restaurante.mapper.PedidoEntityMapper;
 import com.restaurante.mapper.PedidoMapperIn;
 import com.restaurante.mapper.PedidoMapperOut;
 import com.restaurante.model.domain.EstadoPedido;
@@ -11,17 +12,14 @@ import com.restaurante.model.dto.request.ItemPedidoRequestDTO;
 import com.restaurante.model.dto.request.PedidoRequestDTO;
 import com.restaurante.model.dto.response.PedidoResponseDTO;
 import com.restaurante.model.dto.response.PlatoResponseDTO;
+import com.restaurante.persistence.entity.PedidoEntity;
+import com.restaurante.persistence.repository.PedidoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -31,18 +29,16 @@ public class PedidoServiceImpl implements PedidoService {
     private final PlatoService platoService;
     private final MesaService mesaService;
     
+    private final PedidoRepository pedidoRepository;
+    private final PedidoEntityMapper entityMapper;
     private final PedidoMapperIn mapperIn;
     private final PedidoMapperOut mapperOut;
-
-    private final Map<Long, Pedido> pedidos = new ConcurrentHashMap<>();
-    private final AtomicLong secuencias = new AtomicLong(1);
-    private final AtomicLong secuenciasItems = new AtomicLong(1);
 
     @Override
     public PedidoResponseDTO crearPedido(PedidoRequestDTO requestDTO) {
         log.info("Iniciando creación de pedido para la mesa {}", requestDTO.getIdMesa());
 
-        // 1. Validar mesa (si no existe, MesaService lanza MesaNotFoundException)
+        // 1. Validar mesa
         var mesas = mesaService.obtenerTodas();
         boolean mesaExiste = mesas.stream().anyMatch(m -> m.getId().equals(requestDTO.getIdMesa()));
         if (!mesaExiste) {
@@ -58,7 +54,6 @@ public class PedidoServiceImpl implements PedidoService {
         }
 
         Pedido pedido = mapperIn.toDomain(requestDTO);
-        pedido.setId(secuencias.getAndIncrement());
         pedido.setEstado(EstadoPedido.RECIBIDO);
         pedido.setTimestamp(LocalDateTime.now());
 
@@ -72,7 +67,6 @@ public class PedidoServiceImpl implements PedidoService {
             PlatoResponseDTO plato = platoService.obtenerPorId(itemDto.getIdPlato());
             
             ItemPedido item = ItemPedido.builder()
-                    .id(secuenciasItems.getAndIncrement())
                     .idPlato(itemDto.getIdPlato())
                     .nombrePlato(plato.getNombre())
                     .precioCongelado(plato.getPrecio())
@@ -82,24 +76,32 @@ public class PedidoServiceImpl implements PedidoService {
             pedido.agregarItem(item);
         }
 
-        pedidos.put(pedido.getId(), pedido);
-        log.info("Pedido {} creado exitosamente con {} items", pedido.getId(), pedido.getItems().size());
+        PedidoEntity entity = entityMapper.toEntity(pedido);
         
-        return mapperOut.toDTO(pedido);
+        final PedidoEntity finalEntity = entity;
+        if(finalEntity.getItems() != null) {
+            finalEntity.getItems().forEach(i -> i.setPedido(finalEntity));
+        }
+
+        entity = pedidoRepository.save(finalEntity);
+        log.info("Pedido {} creado exitosamente en BD con {} items", entity.getId(), entity.getItems().size());
+        
+        return mapperOut.toDTO(entityMapper.toDomain(entity));
     }
 
     @Override
     public List<PedidoResponseDTO> obtenerPorMesa(Long idMesa) {
         log.info("Consultando pedidos de la mesa {}", idMesa);
-        return pedidos.values().stream()
-                .filter(p -> p.getIdMesa().equals(idMesa))
+        return pedidoRepository.findByIdMesa(idMesa).stream()
+                .map(entityMapper::toDomain)
                 .map(mapperOut::toDTO)
                 .toList();
     }
 
     @Override
     public PedidoResponseDTO actualizarEstado(Long idPedido, String nuevoEstado) {
-        Pedido pedido = buscarOLanzar(idPedido);
+        PedidoEntity entity = buscarOLanzar(idPedido);
+        Pedido pedido = entityMapper.toDomain(entity);
         
         EstadoPedido estado;
         try {
@@ -109,12 +111,14 @@ public class PedidoServiceImpl implements PedidoService {
         }
 
         pedido.cambiarEstado(estado);
+        entity = pedidoRepository.save(entityMapper.toEntity(pedido));
+        
         log.info("Pedido {} cambió a estado {}", idPedido, estado);
-        return mapperOut.toDTO(pedido);
+        return mapperOut.toDTO(entityMapper.toDomain(entity));
     }
 
-    private Pedido buscarOLanzar(Long id) {
-        return Optional.ofNullable(pedidos.get(id))
+    private PedidoEntity buscarOLanzar(Long id) {
+        return pedidoRepository.findById(id)
                 .orElseThrow(() -> new PedidoNotFoundException("Pedido no encontrado con id: " + id));
     }
 }
