@@ -51,6 +51,14 @@ public class GlobalExceptionHandler {
         return ErrorResponseDTO.of(422, "Estado inválido", ex.getMessage(), request.getRequestURI());
     }
 
+    // Acceso denegado (Autenticado pero sin permisos) -> 403
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponseDTO handleAccessDenied(org.springframework.security.access.AccessDeniedException ex, HttpServletRequest request) {
+        log.warn("Intento de acceso denegado (403) a {}: {}", request.getRequestURI(), ex.getMessage());
+        return ErrorResponseDTO.of(403, "Acceso Denegado", "No tienes permisos para realizar esta acción", request.getRequestURI());
+    }
+
     // Cualquier otro error no controlado -> 500
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

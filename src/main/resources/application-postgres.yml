@@ -1,16 +1,13 @@
-server:
-  port: 8080
-
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/bellaciao_db
     username: postgres
-    password: 1234
+    password: Olm1053442983*
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update  # opciones: none, validate, update, create, create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -23,7 +20,3 @@ logging:
     com.restaurante: DEBUG
   file:
     name: logs/api-postgres.log
-
-restaurante:
-  api:
-    key: "123456789"
