@@ -34,10 +34,12 @@ public class SecurityConfig {
     private final UsuarioRepository usuarioRepository;
     private final JwtService jwtService;
     private final UsuarioDetailsService usuarioDetailsService;
+    private final org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.GET, "/api/v1/menu/**").permitAll()
