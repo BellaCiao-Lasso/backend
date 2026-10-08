@@ -245,6 +245,49 @@ Repo --> DB : Spring Data JPA / HikariCP
 Archivo fuente: [diagrama_componentes_especifico.puml](docs/diagrams/diagrama_componentes_especifico.puml)
 </details>
 
+## 🔒 Seguridad y Evidencias (OWASP & JWT)
+
+En este apartado se evidencia la implementación de la arquitectura de seguridad basada en Spring Security, JWT (Stateless), OAuth2 y los estándares defensivos de OWASP.
+
+### 1. Roles y Permisos por Endpoint
+Se configuraron las autorizaciones siguiendo la siguiente matriz estricta:
+[Ver Tabla de Roles y Permisos (`roles_permisos_bellaciao.csv`)](docs/roles_permisos_bellaciao.csv)
+
+### 2. Evidencias Fotográficas de Seguridad
+
+**a) Login Exitoso en Swagger (Request + Respuesta con JWT):**
+> *![img.png](docs/images/loginExitoso.png)*
+
+**b) Acceso Denegado (401 Unauthorized - Llamada sin Token):**
+> *![img_1.png](docs/images/accesoDenegado.png)*
+
+**c) Acceso Denegado (403 Forbidden - Llamada con Rol Incorrecto):**
+> *![img.png](docs/images/accesoDenegado2.png)*
+
+**d) Autorización Global (Botón "Authorize" en Swagger UI):**
+> *![img.png](docs/images/authorized.png)*
+
+**e) Headers HTTP de Seguridad (Protección contra XSS y Clickjacking en Postman):**
+> *![img.png](docs/images/postman.png)*
+
+### 3. Checklist OWASP Top 10 Completado
+El sistema aprueba la verificación de las vulnerabilidades más críticas de la API:
+[Ver Documento de Auditoría OWASP Top 10 (`owasp_checklist.md`)](docs/owasp_checklist.md)
+
+### 4. Pruebas Automatizadas de Seguridad (`mvn test`)
+Se implementó la suite `SecurityTest.java` para verificar preventivamente las vulnerabilidades 401 y 403 con `MockMvc`.
+```text
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.61 s -- in com.restaurante.SecurityTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+```
+
 ---
 
 ### Autor

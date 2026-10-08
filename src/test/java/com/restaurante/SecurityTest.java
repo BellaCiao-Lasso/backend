@@ -41,7 +41,7 @@ class SecurityTest {
         // Asumiendo que crear un plato devuelve 200 OK o 201 Created cuando es exitoso
         mockMvc.perform(post("/api/v1/platos")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"nombre\":\"Pizza\",\"precio\":35000,\"categoria\":\"PLATO_FUERTE\"}"))
+                .content("{\"nombre\":\"Plato Seguridad " + System.currentTimeMillis() + "\",\"precio\":35000,\"categoria\":\"PLATO_FUERTE\"}"))
                 .andExpect(status().isCreated()); // Asumiendo 201 Created (o cambia a isOk() según tu controller)
     }
 }

@@ -52,6 +52,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/v1/menu/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/platos/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/error").permitAll()   // evita que un 403 se convierta en 401 al redirigir a /error
                 
                 .requestMatchers(HttpMethod.POST, "/api/v1/platos").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/platos/**").hasRole("ADMIN")
