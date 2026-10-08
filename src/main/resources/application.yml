@@ -1,5 +1,10 @@
 server:
-  port: 8080
+  port: 8443
+  ssl:
+    key-store: classpath:restaurante.p12
+    key-store-password: ${SSL_KEYSTORE_PASSWORD:bella2026}
+    key-store-type: PKCS12
+    key-alias: restaurante
 
 spring:
   profiles:

@@ -37,3 +37,6 @@ data/
 
 # Logs
 logs/
+
+# Certificados de seguridad local
+*.p12
