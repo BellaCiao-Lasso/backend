@@ -41,6 +41,13 @@ public class SecurityConfig {
         return http
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .csrf(AbstractHttpConfigurer::disable)
+            .headers(headers -> headers
+                .contentSecurityPolicy(csp -> csp
+                    .policyDirectives("default-src 'self'; script-src 'self'"))
+                .frameOptions(frame -> frame.deny())        // bloquea iframes (Clickjacking)
+                .xssProtection(xss -> xss.headerValue(      // activa filtro XSS del navegador
+                    org.springframework.security.web.header.writers.XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
+            )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.GET, "/api/v1/menu/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/platos/**").permitAll()
