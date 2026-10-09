@@ -276,17 +276,8 @@ El sistema aprueba la verificación de las vulnerabilidades más críticas de la
 
 ### 4. Pruebas Automatizadas de Seguridad (`mvn test`)
 Se implementó la suite `SecurityTest.java` para verificar preventivamente las vulnerabilidades 401 y 403 con `MockMvc`.
-```text
-[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.61 s -- in com.restaurante.SecurityTest
-[INFO] 
-[INFO] Results:
-[INFO] 
-[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
-[INFO] 
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-```
+
+> ![mvntest.png](docs/images/mvntest.png)
 
 ---
 
