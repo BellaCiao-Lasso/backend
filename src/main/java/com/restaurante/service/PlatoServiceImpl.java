@@ -1,23 +1,25 @@
 package com.restaurante.service;
 
-import com.restaurante.model.domain.Plato;
-import com.restaurante.model.dto.response.PlatoResponseDTO;
-import com.restaurante.mapper.PlatoMapperOut;
-import com.restaurante.mapper.PlatoEntityMapper;
-import com.restaurante.persistence.entity.PlatoEntity;
-import com.restaurante.persistence.repository.PlatoRepository;
 import com.restaurante.exception.PlatoAlreadyExistsException;
 import com.restaurante.exception.PlatoNotFoundException;
+import com.restaurante.exception.ReglaDeNegocioException;
+import com.restaurante.mapper.PlatoEntityMapper;
+import com.restaurante.mapper.PlatoMapperOut;
+import com.restaurante.model.domain.Plato;
+import com.restaurante.model.dto.response.PlatoResponseDTO;
+import com.restaurante.persistence.entity.PlatoEntity;
+import com.restaurante.persistence.repository.PlatoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PlatoServiceImpl implements PlatoService {
 
     private final PlatoRepository platoRepository;
@@ -60,39 +62,41 @@ public class PlatoServiceImpl implements PlatoService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public PlatoResponseDTO crearPlato(Plato plato) {
         log.info("Creando plato con nombre '{}'", plato.getNombre());
-        
+
         if (platoRepository.existsByNombreIgnoreCase(plato.getNombre())) {
             log.warn("Intento de crear plato duplicado: '{}'", plato.getNombre());
             throw new PlatoAlreadyExistsException("Ya existe un plato con ese nombre: " + plato.getNombre());
         }
 
-        if (!plato.esValido()) {
+        if (!Boolean.TRUE.equals(plato.esValido())) {
             log.error("Plato inválido. Faltan datos requeridos: {}", plato);
-            throw new RuntimeException("El plato no es válido. Faltan datos requeridos.");
+            throw new ReglaDeNegocioException("El plato no es válido. Faltan datos requeridos.");
         }
-        
+
         if (plato.getDisponible() == null) {
             plato.setDisponible(true);
         }
 
         PlatoEntity entity = entityMapper.toEntity(plato);
         entity = platoRepository.save(entity);
-        
+
         Plato platoGuardado = entityMapper.toDomain(entity);
         log.info("Plato '{}' creado en BD con id={}", platoGuardado.getNombre(), platoGuardado.getId());
         return mapperOut.toDTO(platoGuardado);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public PlatoResponseDTO actualizarPlato(Long id, Plato platoActualizado) {
         log.info("Actualizando plato con ID: {}", id);
         PlatoEntity entityExistente = buscarOLanzar(id);
-        
+
         // Verificar conflicto de nombre (si está cambiando el nombre y el nuevo ya existe)
-        if (!entityExistente.getNombre().equalsIgnoreCase(platoActualizado.getNombre()) 
-            && platoRepository.existsByNombreIgnoreCase(platoActualizado.getNombre())) {
+        if (!entityExistente.getNombre().equalsIgnoreCase(platoActualizado.getNombre())
+                && platoRepository.existsByNombreIgnoreCase(platoActualizado.getNombre())) {
             throw new PlatoAlreadyExistsException("Ya existe un plato con ese nombre: " + platoActualizado.getNombre());
         }
 
@@ -105,13 +109,14 @@ public class PlatoServiceImpl implements PlatoService {
         if (platoActualizado.getDisponible() != null) {
             entityExistente.setDisponible(platoActualizado.getDisponible());
         }
-        
+
         entityExistente = platoRepository.save(entityExistente);
         log.info("Plato con ID {} actualizado correctamente en BD", id);
         return mapperOut.toDTO(entityMapper.toDomain(entityExistente));
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public PlatoResponseDTO actualizarDisponibilidad(Long id, boolean disponible) {
         log.info("Cambiando disponibilidad del plato ID {} a {}", id, disponible);
         PlatoEntity entityExistente = buscarOLanzar(id);
@@ -122,6 +127,7 @@ public class PlatoServiceImpl implements PlatoService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void eliminarPlato(Long id) {
         log.warn("Eliminando plato con ID: {}", id);
         PlatoEntity entity = buscarOLanzar(id);

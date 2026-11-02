@@ -11,12 +11,19 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 @WithMockUser(roles = "ADMIN")
 class PlatoControllerTest {
 
@@ -29,7 +36,7 @@ class PlatoControllerTest {
     @Test
     @DisplayName("Paso 6 Diapositiva: Ciclo completo (CRÉALA, LÍSTALA, ACTUALÍZALE UN DATO, BÓRRALA)")
     void cicloCompleto_entidadPlato() throws Exception {
-        // 1. CRÉALA: POST /api/v1/platos
+        // Arrange: 1. CRÉALA (POST /api/v1/platos)
         PlatoRequestDTO nuevoPlato = new PlatoRequestDTO(
                 "Ravioli de Espinaca",
                 29000.0,
@@ -38,6 +45,7 @@ class PlatoControllerTest {
                 true
         );
 
+        // Act & Assert: Crear
         MvcResult resultadoPost = mockMvc.perform(post("/api/v1/platos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevoPlato)))
@@ -50,7 +58,7 @@ class PlatoControllerTest {
         String respuestaJson = resultadoPost.getResponse().getContentAsString();
         Long idGenerado = objectMapper.readTree(respuestaJson).get("id").asLong();
 
-        // 2. LÍSTALA: GET /api/v1/platos y GET /api/v1/menu
+        // Act & Assert: 2. LÍSTALA (GET /api/v1/platos y GET /api/v1/menu)
         mockMvc.perform(get("/api/v1/platos"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
@@ -59,19 +67,19 @@ class PlatoControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
 
-        // 2.1 Buscar por nombre (@Query JPQL de la Diapositiva 1)
+        // Act & Assert: 2.1 Buscar por nombre (@Query JPQL de la Diapositiva 1)
         mockMvc.perform(get("/api/v1/platos/nombre/{nombre}", "Ravioli de Espinaca"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(idGenerado))
                 .andExpect(jsonPath("$.nombre").value("Ravioli de Espinaca"));
 
-        // 3. ACTUALÍZALE UN DATO: PATCH /api/v1/platos/{id}/disponibilidad a false
+        // Act & Assert: 3. ACTUALÍZALE UN DATO (PATCH /api/v1/platos/{id}/disponibilidad a false)
         mockMvc.perform(patch("/api/v1/platos/{id}/disponibilidad", idGenerado)
                         .param("disponible", "false"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.disponible").value(false));
 
-        // 3.1 ACTUALÍZALE UN DATO: PUT /api/v1/platos/{id}
+        // Arrange: 3.1 ACTUALÍZALE UN DATO (PUT /api/v1/platos/{id})
         PlatoRequestDTO platoActualizado = new PlatoRequestDTO(
                 "Ravioli de Espinaca y Ricota",
                 31000.0,
@@ -80,6 +88,7 @@ class PlatoControllerTest {
                 true
         );
 
+        // Act & Assert: Actualizar completo
         mockMvc.perform(put("/api/v1/platos/{id}", idGenerado)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(platoActualizado)))
@@ -87,11 +96,11 @@ class PlatoControllerTest {
                 .andExpect(jsonPath("$.nombre").value("Ravioli de Espinaca y Ricota"))
                 .andExpect(jsonPath("$.precio").value(31000.0));
 
-        // 4. BÓRRALA: DELETE /api/v1/platos/{id}
+        // Act & Assert: 4. BÓRRALA (DELETE /api/v1/platos/{id})
         mockMvc.perform(delete("/api/v1/platos/{id}", idGenerado))
                 .andExpect(status().isNoContent());
 
-        // Verificar que ya no existe (404)
+        // Assert: Verificar que ya no existe (404)
         mockMvc.perform(get("/api/v1/platos/{id}", idGenerado))
                 .andExpect(status().isNotFound());
     }

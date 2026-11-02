@@ -18,5 +18,7 @@ public interface PedidoEntityMapper {
     PedidoEntity toEntity(Pedido domain);
 
     ItemPedido toDomain(ItemPedidoEntity entity);
+
+    @Mapping(target = "pedido", ignore = true)
     ItemPedidoEntity toEntity(ItemPedido domain);
 }

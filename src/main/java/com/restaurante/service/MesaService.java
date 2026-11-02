@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface MesaService {
     MesaResponseDTO crearMesa(MesaRequestDTO requestDTO);
+    MesaResponseDTO obtenerPorId(Long id);
     List<MesaResponseDTO> obtenerTodas();
     List<MesaResponseDTO> obtenerDisponibles();
     MesaResponseDTO cambiarEstado(Long id, String nuevoEstado);

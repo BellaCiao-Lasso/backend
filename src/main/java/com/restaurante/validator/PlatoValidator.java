@@ -1,6 +1,8 @@
 package com.restaurante.validator;
 
 import com.restaurante.exception.PlatoAlreadyExistsException;
+import com.restaurante.exception.ReglaDeNegocioException;
+import com.restaurante.model.domain.Plato;
 import com.restaurante.persistence.repository.PlatoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,19 +14,28 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class PlatoValidator {
+public class PlatoValidator implements IPlatoValidator {
 
     private final PlatoRepository platoRepository;
 
+    @Override
     public void validarNombreUnico(String nombre) {
         if (platoRepository.existsByNombreIgnoreCase(nombre)) {
             throw new PlatoAlreadyExistsException("Ya existe un plato con ese nombre: " + nombre);
         }
     }
 
+    @Override
     public void validarNombreUnicoParaActualizar(String nombre, Long id) {
         if (platoRepository.existsByNombreIgnoreCaseAndIdNot(nombre, id)) {
             throw new PlatoAlreadyExistsException("Ya existe un plato con ese nombre: " + nombre);
+        }
+    }
+
+    @Override
+    public void validarDatosBasicos(Plato plato) {
+        if (plato == null || !Boolean.TRUE.equals(plato.esValido())) {
+            throw new ReglaDeNegocioException("El plato no es válido. Faltan datos requeridos o el precio no es positivo.");
         }
     }
 }

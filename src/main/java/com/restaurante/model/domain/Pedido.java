@@ -1,11 +1,15 @@
 package com.restaurante.model.domain;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import com.restaurante.exception.PedidoNoModificableException;
+import com.restaurante.model.domain.state.PedidoStateFactory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -22,12 +26,20 @@ public class Pedido {
     public Boolean puedeModificarse() {
         return this.estado == EstadoPedido.RECIBIDO;
     }
+
     public void agregarItem(ItemPedido item) {
-        if (puedeModificarse()) {
-            this.items.add(item);
+        if (!Boolean.TRUE.equals(puedeModificarse())) {
+            throw new PedidoNoModificableException(
+                    "No se pueden agregar ítems a un pedido en estado " + this.estado);
         }
+        this.items.add(item);
     }
+
     public void cambiarEstado(EstadoPedido nuevoEstado) {
-        this.estado = nuevoEstado;
+        if (this.estado == null || this.estado == nuevoEstado) {
+            this.estado = nuevoEstado;
+            return;
+        }
+        PedidoStateFactory.obtenerEstado(this.estado).transicionarA(this, nuevoEstado);
     }
 }
