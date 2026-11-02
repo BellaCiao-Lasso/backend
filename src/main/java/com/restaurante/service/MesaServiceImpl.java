@@ -15,12 +15,14 @@ import com.restaurante.persistence.repository.MesaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MesaServiceImpl implements MesaService {
 
     private final MesaRepository mesaRepository;
@@ -29,6 +31,7 @@ public class MesaServiceImpl implements MesaService {
     private final MesaMapperOut mapperOut;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MesaResponseDTO crearMesa(MesaRequestDTO requestDTO) {
         log.info("Intentando crear mesa número {}", requestDTO.getNumero());
 
@@ -46,6 +49,13 @@ public class MesaServiceImpl implements MesaService {
 
         log.info("Mesa {} creada exitosamente con ID {}", entity.getNumero(), entity.getId());
 
+        return mapperOut.toDTO(entityMapper.toDomain(entity));
+    }
+
+    @Override
+    public MesaResponseDTO obtenerPorId(Long id) {
+        log.debug("Consultando mesa con ID {}", id);
+        MesaEntity entity = buscarOLanzar(id);
         return mapperOut.toDTO(entityMapper.toDomain(entity));
     }
 
@@ -68,10 +78,11 @@ public class MesaServiceImpl implements MesaService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MesaResponseDTO cambiarEstado(Long id, String nuevoEstado) {
         MesaEntity entity = buscarOLanzar(id);
         Mesa mesa = entityMapper.toDomain(entity);
-        
+
         EstadoMesa estado;
         try {
             estado = EstadoMesa.valueOf(nuevoEstado.toUpperCase());
@@ -85,36 +96,38 @@ public class MesaServiceImpl implements MesaService {
 
         mesa.setEstado(estado);
         entity = mesaRepository.save(entityMapper.toEntity(mesa));
-        
+
         log.info("Mesa {} (ID: {}) cambió a estado {}", mesa.getNumero(), id, estado);
         return mapperOut.toDTO(entityMapper.toDomain(entity));
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MesaResponseDTO abrirCuenta(Long id) {
         MesaEntity entity = buscarOLanzar(id);
         Mesa mesa = entityMapper.toDomain(entity);
-        
+
         if (Boolean.TRUE.equals(mesa.getCuentaAbierta())) {
             throw new EstadoInvalidoException("La cuenta de la mesa ya está abierta.");
         }
         mesa.abrirCuenta();
-        
+
         entity = mesaRepository.save(entityMapper.toEntity(mesa));
         log.info("Cuenta abierta para mesa {} (ID: {})", mesa.getNumero(), id);
         return mapperOut.toDTO(entityMapper.toDomain(entity));
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MesaResponseDTO cerrarCuenta(Long id) {
         MesaEntity entity = buscarOLanzar(id);
         Mesa mesa = entityMapper.toDomain(entity);
-        
+
         if (!Boolean.TRUE.equals(mesa.getCuentaAbierta())) {
             throw new EstadoInvalidoException("La cuenta de la mesa no está abierta.");
         }
         mesa.cerrarCuenta();
-        
+
         entity = mesaRepository.save(entityMapper.toEntity(mesa));
         log.info("Cuenta cerrada para mesa {} (ID: {})", mesa.getNumero(), id);
         return mapperOut.toDTO(entityMapper.toDomain(entity));
