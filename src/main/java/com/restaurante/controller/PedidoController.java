@@ -1,18 +1,21 @@
 package com.restaurante.controller;
 
+import com.restaurante.controller.docs.PedidoApi;
 import com.restaurante.model.dto.request.PedidoRequestDTO;
 import com.restaurante.model.dto.response.PedidoResponseDTO;
 import com.restaurante.service.PedidoService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -20,17 +23,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/pedidos")
 @RequiredArgsConstructor
-@Tag(name = "Pedidos", description = "Gestión de los pedidos de las mesas")
-public class PedidoController {
+public class PedidoController implements PedidoApi {
 
     private final PedidoService pedidoService;
 
-    @Operation(summary = "Crear un nuevo pedido", description = "Registra un pedido para una mesa ocupada")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Pedido creado exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
-            @ApiResponse(responseCode = "422", description = "Mesa no ocupada o plato no disponible")
-    })
+    @Override
     @PostMapping
     public ResponseEntity<PedidoResponseDTO> crearPedido(@Valid @RequestBody PedidoRequestDTO requestDTO) {
         log.info("POST /api/v1/pedidos - Creando pedido para mesa {}", requestDTO.getIdMesa());
@@ -38,14 +35,14 @@ public class PedidoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(respuesta);
     }
 
-    @Operation(summary = "Obtener pedidos por mesa", description = "Devuelve todos los pedidos de una mesa en particular")
+    @Override
     @GetMapping("/mesa/{idMesa}")
     public ResponseEntity<List<PedidoResponseDTO>> obtenerPorMesa(@PathVariable Long idMesa) {
         log.info("GET /api/v1/pedidos/mesa/{} - Consultando pedidos", idMesa);
         return ResponseEntity.ok(pedidoService.obtenerPorMesa(idMesa));
     }
 
-    @Operation(summary = "Actualizar estado de un pedido", description = "Cambia el estado de un pedido (ej: PREPARANDO, LISTO, ENTREGADO)")
+    @Override
     @PostMapping("/{id}/estado")
     public ResponseEntity<PedidoResponseDTO> actualizarEstado(
             @PathVariable Long id,

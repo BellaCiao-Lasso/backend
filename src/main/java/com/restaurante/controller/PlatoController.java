@@ -1,21 +1,26 @@
 package com.restaurante.controller;
 
-
+import com.restaurante.controller.docs.PlatoApi;
 import com.restaurante.mapper.PlatoMapperIn;
 import com.restaurante.model.domain.Plato;
 import com.restaurante.model.dto.request.PlatoRequestDTO;
 import com.restaurante.model.dto.response.PlatoResponseDTO;
 import com.restaurante.service.PlatoService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -23,17 +28,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/platos")
 @RequiredArgsConstructor
-@Tag(name = "Platos", description = "Gestión de la carta del restaurante")
-public class PlatoController {
+public class PlatoController implements PlatoApi {
 
     private final PlatoService platoService;
-    private final PlatoMapperIn mapperIn; // El controller se encarga de transformar RequestDTO a Domain
+    private final PlatoMapperIn mapperIn;
 
-    @Operation(summary = "Obtener todos los platos", description = "Devuelve la carta completa con estado de disponibilidad")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Carta obtenida correctamente"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
+    @Override
     @GetMapping
     public ResponseEntity<List<PlatoResponseDTO>> listarPlatos() {
         log.info("GET /api/v1/platos - Solicitando lista completa de platos");
@@ -42,35 +42,21 @@ public class PlatoController {
         return ResponseEntity.ok(platos);
     }
 
-    @Operation(summary = "Obtener un plato por ID", description = "Devuelve un plato específico buscándolo por su identificador")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Plato encontrado correctamente"),
-            @ApiResponse(responseCode = "404", description = "Plato no encontrado con el ID proporcionado"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
+    @Override
     @GetMapping("/{id}")
     public ResponseEntity<PlatoResponseDTO> obtenerPlato(@PathVariable Long id) {
         log.info("GET /api/v1/platos/{} - Buscando plato por ID", id);
         return ResponseEntity.ok(platoService.obtenerPorId(id));
     }
 
-    @Operation(summary = "Buscar plato por nombre", description = "Busca un plato por su nombre usando consulta JPQL personalizada")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Plato encontrado correctamente"),
-            @ApiResponse(responseCode = "404", description = "Plato no encontrado con el nombre proporcionado")
-    })
+    @Override
     @GetMapping("/nombre/{nombre}")
     public ResponseEntity<PlatoResponseDTO> buscarPorNombre(@PathVariable String nombre) {
         log.info("GET /api/v1/platos/nombre/{} - Buscando plato por nombre", nombre);
         return ResponseEntity.ok(platoService.buscarPorNombre(nombre));
     }
 
-    @Operation(summary = "Crear un plato", description = "Agrega un nuevo plato a la carta")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Plato creado correctamente"),
-            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
-            @ApiResponse(responseCode = "409", description = "Ya existe un plato con ese nombre")
-    })
+    @Override
     @PostMapping
     public ResponseEntity<PlatoResponseDTO> crearPlato(@RequestBody @Valid PlatoRequestDTO platoRequestDTO) {
         log.info("POST /api/v1/platos - Creando plato: {}", platoRequestDTO.nombre());
@@ -80,12 +66,7 @@ public class PlatoController {
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Actualizar un plato", description = "Modifica los datos de un plato existente")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Plato actualizado correctamente"),
-            @ApiResponse(responseCode = "404", description = "Plato no encontrado con el ID proporcionado"),
-            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
-    })
+    @Override
     @PutMapping("/{id}")
     public ResponseEntity<PlatoResponseDTO> actualizarPlato(@PathVariable Long id, @RequestBody @Valid PlatoRequestDTO platoRequestDTO) {
         log.info("PUT /api/v1/platos/{} - Actualizando plato", id);
@@ -95,11 +76,7 @@ public class PlatoController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @Operation(summary = "Actualizar disponibilidad de un plato", description = "Modifica únicamente la disponibilidad (true/false) de un plato en el menú")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Disponibilidad actualizada correctamente"),
-            @ApiResponse(responseCode = "404", description = "Plato no encontrado con el ID proporcionado")
-    })
+    @Override
     @PatchMapping("/{id}/disponibilidad")
     public ResponseEntity<PlatoResponseDTO> actualizarDisponibilidad(
             @PathVariable Long id,
@@ -109,11 +86,7 @@ public class PlatoController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @Operation(summary = "Eliminar un plato", description = "Elimina un plato de la carta por su ID")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Plato eliminado correctamente"),
-            @ApiResponse(responseCode = "404", description = "Plato no encontrado con el ID proporcionado")
-    })
+    @Override
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarPlato(@PathVariable Long id) {
         log.warn("DELETE /api/v1/platos/{} - Eliminando plato de la carta", id);
@@ -122,5 +95,3 @@ public class PlatoController {
         return ResponseEntity.noContent().build();
     }
 }
-
-
