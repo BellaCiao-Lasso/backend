@@ -10,3 +10,4 @@ public class ListoState extends AbstractPedidoState {
         pedido.setEstado(EstadoPedido.ENTREGADO);
     }
 }
+

@@ -20,3 +20,4 @@ public class EnPreparacionState extends AbstractPedidoState {
         pedido.setEstado(EstadoPedido.CANCELADO);
     }
 }
+

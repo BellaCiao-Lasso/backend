@@ -9,3 +9,4 @@ public interface IMesaValidator {
     void validarAperturaCuenta(Mesa mesa);
     void validarCierreCuenta(Mesa mesa);
 }
+

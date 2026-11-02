@@ -69,3 +69,4 @@ public interface PlatoApi {
     })
     ResponseEntity<Void> eliminarPlato(@PathVariable Long id);
 }
+

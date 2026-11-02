@@ -29,3 +29,4 @@ public interface AuthApi {
     })
     ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO request);
 }
+

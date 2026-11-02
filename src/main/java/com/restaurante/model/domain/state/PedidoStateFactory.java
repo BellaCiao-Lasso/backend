@@ -28,3 +28,4 @@ public final class PedidoStateFactory {
         return ESTADOS.get(estado);
     }
 }
+

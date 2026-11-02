@@ -10,3 +10,4 @@ public interface PedidoState {
     void cancelar(Pedido pedido);
     void transicionarA(Pedido pedido, EstadoPedido nuevoEstado);
 }
+

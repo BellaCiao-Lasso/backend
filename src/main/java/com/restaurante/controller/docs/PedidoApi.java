@@ -36,3 +36,4 @@ public interface PedidoApi {
     })
     ResponseEntity<PedidoResponseDTO> actualizarEstado(@PathVariable Long id, @RequestParam String estado);
 }
+

@@ -27,3 +27,4 @@ public interface MenuApi {
     })
     ResponseEntity<List<PlatoResponseDTO>> obtenerMenuPorCategoria(@PathVariable String categoria);
 }
+

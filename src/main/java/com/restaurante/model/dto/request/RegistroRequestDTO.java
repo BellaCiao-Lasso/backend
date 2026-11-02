@@ -21,3 +21,4 @@ public record RegistroRequestDTO(
         String rol
 ) {
 }
+

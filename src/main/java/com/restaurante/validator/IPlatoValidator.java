@@ -7,3 +7,4 @@ public interface IPlatoValidator {
     void validarNombreUnicoParaActualizar(String nombre, Long id);
     void validarDatosBasicos(Plato plato);
 }
+

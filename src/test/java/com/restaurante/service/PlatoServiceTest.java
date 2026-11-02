@@ -28,7 +28,7 @@ class PlatoServiceTest {
 
     @Mock
     private PlatoRepository platoRepository;
-    
+
     @Mock
     private PlatoEntityMapper entityMapper;
 
@@ -51,7 +51,7 @@ class PlatoServiceTest {
         platoEntity.setPrecio(15000.0);
         platoEntity.setCategoria("PLATO_FUERTE");
         platoEntity.setDisponible(true);
-        
+
         responseDto = new PlatoResponseDTO();
         responseDto.setId(1L);
         responseDto.setNombre("Tacos");
@@ -63,14 +63,17 @@ class PlatoServiceTest {
     @Test
     @DisplayName("✅ Crear plato válido - debe retornar ResponseDTO con id asignado")
     void crear_platoValido_debeRetornarResponseDTO() {
+        // Arrange
         when(platoRepository.existsByNombreIgnoreCase(any())).thenReturn(false);
         when(entityMapper.toEntity(any())).thenReturn(platoEntity);
         when(platoRepository.save(any())).thenReturn(platoEntity);
         when(entityMapper.toDomain(any())).thenReturn(platoDomain);
         when(mapperOut.toDTO(any(Plato.class))).thenReturn(responseDto);
 
+        // Act
         PlatoResponseDTO resultado = platoService.crearPlato(platoDomain);
 
+        // Assert
         assertNotNull(resultado);
         assertEquals("Tacos", resultado.getNombre());
         assertEquals(15000.0, resultado.getPrecio());
@@ -79,8 +82,10 @@ class PlatoServiceTest {
     @Test
     @DisplayName("❌ Crear plato con nombre duplicado - debe lanzar PlatoAlreadyExistsException")
     void crear_nombreDuplicado_debeLanzarExcepcion() {
+        // Arrange
         when(platoRepository.existsByNombreIgnoreCase(any())).thenReturn(true);
 
+        // Act & Assert
         PlatoAlreadyExistsException ex = assertThrows(
                 PlatoAlreadyExistsException.class,
                 () -> platoService.crearPlato(platoDomain)
@@ -92,8 +97,10 @@ class PlatoServiceTest {
     @Test
     @DisplayName("❌ Obtener plato por ID inexistente - debe lanzar PlatoNotFoundException")
     void obtenerPorId_noExistente_debeLanzarExcepcion() {
+        // Arrange
         when(platoRepository.findById(99L)).thenReturn(Optional.empty());
 
+        // Act & Assert
         assertThrows(
                 PlatoNotFoundException.class,
                 () -> platoService.obtenerPorId(99L)
@@ -103,25 +110,31 @@ class PlatoServiceTest {
     @Test
     @DisplayName("✅ Obtener platos disponibles - debe retornar solo los disponibles")
     void obtenerDisponibles_debeRetornarSoloDisponibles() {
+        // Arrange
         when(platoRepository.findByDisponibleTrue()).thenReturn(List.of(platoEntity));
         when(entityMapper.toDomain(any())).thenReturn(platoDomain);
         when(mapperOut.toDTO(any())).thenReturn(responseDto);
 
+        // Act
         List<PlatoResponseDTO> disponibles = platoService.obtenerDisponibles();
 
+        // Assert
         assertEquals(1, disponibles.size());
     }
 
     @Test
     @DisplayName("✅ Actualizar disponibilidad de un plato - debe cambiar disponible y retornar DTO")
     void actualizarDisponibilidad_debeRetornarDTOCorrecto() {
+        // Arrange
         when(platoRepository.findById(1L)).thenReturn(Optional.of(platoEntity));
         when(platoRepository.save(any(PlatoEntity.class))).thenReturn(platoEntity);
         when(entityMapper.toDomain(any(PlatoEntity.class))).thenReturn(platoDomain);
         when(mapperOut.toDTO(any(Plato.class))).thenReturn(responseDto);
 
+        // Act
         PlatoResponseDTO resultado = platoService.actualizarDisponibilidad(1L, false);
 
+        // Assert
         assertNotNull(resultado);
         verify(platoRepository, times(1)).save(platoEntity);
     }
@@ -129,12 +142,15 @@ class PlatoServiceTest {
     @Test
     @DisplayName("✅ Buscar plato por nombre usando @Query JPQL - debe retornar DTO")
     void buscarPorNombre_debeRetornarDTOCorrecto() {
+        // Arrange
         when(platoRepository.buscarPorNombre("Tacos")).thenReturn(Optional.of(platoEntity));
         when(entityMapper.toDomain(any(PlatoEntity.class))).thenReturn(platoDomain);
         when(mapperOut.toDTO(any(Plato.class))).thenReturn(responseDto);
 
+        // Act
         PlatoResponseDTO resultado = platoService.buscarPorNombre("Tacos");
 
+        // Assert
         assertNotNull(resultado);
         assertEquals("Tacos", resultado.getNombre());
         verify(platoRepository, times(1)).buscarPorNombre("Tacos");

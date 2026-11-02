@@ -15,3 +15,4 @@ public class RecibidoState extends AbstractPedidoState {
         pedido.setEstado(EstadoPedido.CANCELADO);
     }
 }
+

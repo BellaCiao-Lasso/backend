@@ -46,3 +46,4 @@ public interface MesaApi {
     })
     ResponseEntity<MesaResponseDTO> cerrarCuenta(@PathVariable Long id);
 }
+
